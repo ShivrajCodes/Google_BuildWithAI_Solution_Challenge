@@ -1,74 +1,64 @@
-# Sports Media Guardian
+# Digital Sports Media Protection Backend
 
-> An AI-powered system to detect, track, and flag unauthorized use of official sports media across the internet — target : to be built in 10 days.
+This agentic backend API protects digital sports media by utilizing AI and perceptual hashing to detect unauthorized image duplication. It intercepts incoming image URLs, generates a perceptual hash (fingerprint) using CrewAI agents, and searches the database for similarity matches. Finally, a verdict agent processes the matches using Google Gemini to provide a final determination on potential copyright infringement.
 
----
+## 🛠️ Environment Setup
+To run this application safely, you need to create your own configuration file for the AI APIs. 
+1. Create a file named exactly `.env` in the root folder of this project.
+2. Inside that file, place your Gemini API key (or Groq key if you modify the agent configuration) like this:
+```txt
+GEMINI_API_KEY=your_actual_key_here
+```
 
-## The problem
+## 📦 Installation
+Make sure you have Python 3.10+ installed. Then install all required packages via pip:
+```bash
+pip install -r requirements.txt
+```
 
-Sports organizations generate massive volumes of high-value digital media — match footage, photos, highlight reels — that scatter across the internet within minutes of publishing. There is currently no scalable way to track where this content ends up, who is using it without permission, and when IP violations occur.
+## 🚀 Running the Server
+You can spin up the full FastAPI backend using uvicorn. Run this in your terminal:
+```bash
+uvicorn main:app --reload
+```
+*Your API will now be live on `http://localhost:8000`*
 
-## What we're building
+## 🌐 API Endpoints
 
-A near real-time pipeline that:
-- Fingerprints official sports media and stores it in a vector database
-- Scans for unauthorized copies or near-duplicates across the web
-- Scores each detection with an AI violation confidence score (0–1)
-- Alerts the rights owner when a violation is found
-- Auto-drafts a DMCA takedown report
+### `POST /check`
+This is the primary pipeline trigger point for the LangGraph agent architecture.
 
----
+**Expects (JSON payload)**:
+```json
+{
+  "image_url": "https://example.com/some_image.png"
+}
+```
 
-## Team
-
-| Person | Role | Responsibility |
-|---|---|---|
-| **P1** | Backend engineer | LangGraph workflow, CrewAI agents, Groq API integration, FastAPI endpoint |
-| **P2** | Data engineer | ChromaDB setup, image embeddings, similarity search logic, optional Pinecone migration |
-| **P3** | Frontend developer | Vanilla JS + HTML dashboard, results UI, alerts history panel, API integration |
-| **P4** | QA / Integration | Test environment, endpoint testing, end-to-end integration, bug coordination, demo prep |
-
----
-
-## Tech stack (all free)
-
-| Layer | Tool |
-|---|---|
-| AI brain | Groq API — Llama 3.3 70B |
-| Agent orchestration | LangGraph + CrewAI |
-| Vector DB (local) | ChromaDB |
-| Vector DB (production) | Pinecone free tier |
-| Backend framework | FastAPI |
-| Frontend | Vanilla JS + HTML + CSS |
-| IDE | Google Antigravity |
-
----
-
-## Timeline
-
-10 days. See task breakdown in project board.
-
-**Critical handoffs:**
-- Day 2 — P2 shares ChromaDB module with P1
-- Day 6 — P1's `/check` endpoint must be live for P3 and P4 to connect
-- Day 7 — P4 runs first end-to-end test
-- Day 10 — Full demo with 3 test scenarios
+**Returns (JSON Payload)**:
+```json
+{
+  "score": 0.95,
+  "matches": [
+    {"match": "official_ipl_photo_2024.jpg", "similarity": 0.91},
+    {"match": "getty_sports_image_445.jpg", "similarity": 0.76}
+  ],
+  "verdict": "The image exhibits extremely high similarity to an official IPL photo..."
+}
+```
 
 ---
 
-## Status
+### 📝 Notice for Database Teammate (Antigravity Context)
 
-> 🚧 In progress — nothing built yet. Setup begins Day 1.
+**If you are writing the Database / Vector Search integration using Antigravity, please read this:**
 
----
-
-## Getting started
-
-> Instructions will be added once the environment is set up. For now, each person should:
-> 1. Create a free Groq account at [console.groq.com](https://console.groq.com)
-> 2. Download Google Antigravity at [antigravity.google](https://antigravity.google)
-> 3. Install Python 3.11 from [python.org](https://python.org)
-
----
-
-*Built by a team of 4. Powered by free APIs. Zero budget.*
+> [!IMPORTANT]
+> The current file `utils/mock_search.py` is a TEMPORARY placeholder. 
+> 
+> **Your specific task is**: 
+> 1. Completely replace `utils/mock_search.py` with real ChromaDB integration logic.
+> 2. Implement the actual vector similarity search using the generated perceptual `fingerprint` strings.
+> 3. Ensure your new `mock_search` (or renamed function) returns a List of Dictionaries in the *exact same schema* as currently mocked: `{"match": str, "similarity": float}`.
+>
+> Doing this will immediately and natively wire your real Vector Database into our existing `graph/pipeline.py` LangGraph architecture, powering the `verdict_agent` with real data!
