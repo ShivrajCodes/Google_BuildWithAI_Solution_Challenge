@@ -79,3 +79,7 @@ def check_image_endpoint(request: CheckImageRequest) -> CheckImageResponse:
     except Exception as e:
         # Prevent the server from crashing if CrewAI triggers a hard fault downstream
         raise HTTPException(status_code=500, detail=str(e))
+
+# Mount the static site correctly
+from fastapi.staticfiles import StaticFiles
+app.mount("/", StaticFiles(directory="frontend/out", html=True), name="frontend")
