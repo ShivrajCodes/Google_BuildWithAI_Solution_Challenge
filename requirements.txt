@@ -1,8 +1,10 @@
 fastapi
 uvicorn
 langgraph
-crewai[google-genai]
+crewai
 imagehash
 pillow
 python-dotenv
 google-generativeai
+chromadb
+requests

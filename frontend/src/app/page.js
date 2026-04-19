@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Search, Activity, ShieldCheck, ShieldAlert, History, Link as LinkIcon, Loader2, AlertCircle, Sun, Moon, Database, Bot, ArrowRight, Image as ImageIcon, LogIn, LogOut } from "lucide-react";
-import { useSession, signIn, signOut } from "next-auth/react";
-
 export default function Home() {
-  const { data: session, status } = useSession();
+  const [session, setSession] = useState(null);
+  const status = session ? "authenticated" : "unauthenticated";
+  const signIn = () => setSession({ user: { name: 'Demo User', image: 'https://avatar.vercel.sh/guest' } });
+  const signOut = () => setSession(null);
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -48,7 +49,7 @@ export default function Home() {
     setResult(null);
 
     try {
-      const response = await fetch("http://localhost:8000/check", {
+      const response = await fetch("/check", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

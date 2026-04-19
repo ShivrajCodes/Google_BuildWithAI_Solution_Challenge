@@ -1,64 +1,112 @@
-# Digital Sports Media Protection Backend
+<div align="center">
 
-This agentic backend API protects digital sports media by utilizing AI and perceptual hashing to detect unauthorized image duplication. It intercepts incoming image URLs, generates a perceptual hash (fingerprint) using CrewAI agents, and searches the database for similarity matches. Finally, a verdict agent processes the matches using Google Gemini to provide a final determination on potential copyright infringement.
+![python](https://img.shields.io/badge/Python-181717.svg?style=for-the-badge&logo=python&logoColor=white)
+![fastapi](https://img.shields.io/badge/FastAPI-181717.svg?style=for-the-badge&logo=fastapi&logoColor=white)
+![nextjs](https://img.shields.io/badge/Next.js-181717.svg?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![chroma](https://img.shields.io/badge/ChromaDB-181717.svg?style=for-the-badge)
+![gemini](https://img.shields.io/badge/Google%20Gemini-181717.svg?style=for-the-badge)
 
-## 🛠️ Environment Setup
-To run this application safely, you need to create your own configuration file for the AI APIs. 
-1. Create a file named exactly `.env` in the root folder of this project.
-2. Inside that file, place your Gemini API key (or Groq key if you modify the agent configuration) like this:
-```txt
-GEMINI_API_KEY=your_actual_key_here
+# 🛡️ MediaGuard – Digital Sports Media Protection System
+
+</div>
+
+BuildWithAI is an **AI-powered agentic system** designed to protect digital sports media by detecting **unauthorized image duplication and copyright infringement** using perceptual hashing and vector similarity search.
+
+---
+
+<div align="center">
+  <img src="https://via.placeholder.com/800x400.png?text=Demo+Preview" height=400 width=800/>
+</div>
+
+---
+
+## 🚀 Features
+
+- Perceptual Hashing for image similarity detection  
+- Agent-based architecture (CrewAI + LangGraph)  
+- Vector similarity search using ChromaDB  
+- AI verdict generation with Google Gemini  
+- End-to-end automated pipeline  
+- FastAPI backend + Next.js frontend  
+
+---
+
+## ⚙️ How It Works
+
+1. User submits an image URL  
+2. Fingerprint Agent generates perceptual hash  
+3. ChromaDB searches for similar images  
+4. Verdict Agent analyzes matches  
+5. Gemini generates final verdict  
+6. Response returned with score + matches  
+
+---
+
+## 📂 Project Structure
+
+```
+buildwithai/
+├── main.py
+├── requirements.txt
+├── agents/
+├── graph/
+├── utils/
+├── frontend/
+├── chroma_db/
 ```
 
-## 📦 Installation
-Make sure you have Python 3.10+ installed. Then install all required packages via pip:
+---
+
+## 🛠️ Setup
+
 ```bash
+git clone https://github.com/your-repo/buildwithai.git
+cd buildwithai
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 🚀 Running the Server
-You can spin up the full FastAPI backend using uvicorn. Run this in your terminal:
+Create `.env`:
+```
+GEMINI_API_KEY=your_api_key_here
+```
+
+---
+
+## 🚀 Run
+
 ```bash
 uvicorn main:app --reload
 ```
-*Your API will now be live on `http://localhost:8000`*
 
-## 🌐 API Endpoints
+---
 
-### `POST /check`
-This is the primary pipeline trigger point for the LangGraph agent architecture.
+## 🌐 API
 
-**Expects (JSON payload)**:
-```json
+POST `/check`
+
+Request:
+```
 {
-  "image_url": "https://example.com/some_image.png"
+  "image_url": "https://example.com/image.png"
 }
 ```
 
-**Returns (JSON Payload)**:
-```json
+Response:
+```
 {
   "score": 0.95,
-  "matches": [
-    {"match": "official_ipl_photo_2024.jpg", "similarity": 0.91},
-    {"match": "getty_sports_image_445.jpg", "similarity": 0.76}
-  ],
-  "verdict": "The image exhibits extremely high similarity to an official IPL photo..."
+  "matches": [...],
+  "verdict": "High similarity detected"
 }
 ```
 
 ---
 
-### 📝 Notice for Database Teammate (Antigravity Context)
+## 👥 Team
 
-**If you are writing the Database / Vector Search integration using Antigravity, please read this:**
-
-> [!IMPORTANT]
-> The current file `utils/mock_search.py` is a TEMPORARY placeholder. 
-> 
-> **Your specific task is**: 
-> 1. Completely replace `utils/mock_search.py` with real ChromaDB integration logic.
-> 2. Implement the actual vector similarity search using the generated perceptual `fingerprint` strings.
-> 3. Ensure your new `mock_search` (or renamed function) returns a List of Dictionaries in the *exact same schema* as currently mocked: `{"match": str, "similarity": float}`.
->
-> Doing this will immediately and natively wire your real Vector Database into our existing `graph/pipeline.py` LangGraph architecture, powering the `verdict_agent` with real data!
+- Shivraj Bhattacharya – Integration  
+- Roney – Frontend  
+- Tanisha Debnath – Database  
+- Trisha Bej – Backend  
