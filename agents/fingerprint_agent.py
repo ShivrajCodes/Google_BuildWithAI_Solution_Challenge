@@ -21,7 +21,7 @@ def generate_perceptual_hash(image_url: str) -> str:
     """
     try:
         # Step 2: Download the image using the requests library
-        headers = {'User-Agent': 'Mozilla/5.0'} # Basic header to prevent some 403 errors
+        headers = {'User-Agent': 'MediaGuardBot/1.0 (Digital Rights Protection System; buildwithai challenge)'} 
         response = requests.get(image_url, headers=headers)
         response.raise_for_status()
 

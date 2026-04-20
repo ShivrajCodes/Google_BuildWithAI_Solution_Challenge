@@ -43,11 +43,11 @@ class CheckImageResponse(BaseModel):
 # API Endpoints
 # ----------------------------------------
 
-# 3. A simple GET endpoint at the root path
-@app.get("/")
+# 3. A simple GET endpoint for health checking
+@app.get("/api/health")
 def health_check():
     """
-    Root endpoint to confirm the server is responsive and healthy.
+    Endpoint to confirm the server is responsive and healthy.
     """
     return {"status": "Sports Media Protection API is running"}
 

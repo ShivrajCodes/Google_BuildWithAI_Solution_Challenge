@@ -100,18 +100,35 @@ def verdict_node(state: GraphState):
     )
     
     # Parse result
-    result_str = str(result)
+    result_str = str(result).strip()
     score = 0.0
-    verdict = "Could not parse verdict"
-    
+    verdict = "Analysis complete."
+
+    # 1. Try parsing as JSON (preferred)
+    try:
+        # Strip potential markdown fences
+        import re
+        clean_json = re.sub(r'^```(?:json)?\s*', '', result_str, flags=re.MULTILINE)
+        clean_json = re.sub(r'\s*```$', '', clean_json, flags=re.MULTILINE)
+        data = json.loads(clean_json)
+        
+        score = float(data.get("score", 0.0))
+        verdict = data.get("verdict", "No reason provided")
+        print(f"  [PARSED] Success (JSON mode): score={score}")
+        return {"score": score, "verdict": verdict}
+    except Exception:
+        pass
+
+    # 2. Fallback to prefix-based parsing
+    print("  [DEBUG] JSON parse failed, falling back to string matching...")
     for line in result_str.split("\n"):
-        if line.startswith("Score:"):
+        if line.lower().startswith("score:"):
             try:
-                score = float(line.replace("Score:", "").strip())
+                score = float(line.split(":", 1)[1].strip())
             except ValueError:
                 pass
-        elif line.startswith("Verdict:"):
-            verdict = line.replace("Verdict:", "").strip()
+        elif line.lower().startswith("verdict:"):
+            verdict = line.split(":", 1)[1].strip()
     
     return {
         "score": score,
