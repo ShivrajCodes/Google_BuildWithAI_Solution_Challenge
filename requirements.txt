@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 langgraph
-crewai
+crewai[google-genai]
 imagehash
 pillow
 python-dotenv
