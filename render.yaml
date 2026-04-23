@@ -1,0 +1,17 @@
+# render.yaml — Render Blueprint for the MediaGuard app
+# This defines a single Web Service that serves both the FastAPI backend
+# and the static Next.js frontend.
+
+services:
+  - type: web
+    name: mediaguard
+    runtime: python
+    buildCommand: bash build.sh
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.12"
+      - key: NODE_VERSION
+        value: "20.18.3"
+      - key: GEMINI_API_KEY
+        sync: false  # must be set manually in Render dashboard

@@ -74,7 +74,7 @@ export default function Home() {
       saveScan(scanResult);
     } catch (err) {
       console.error(err);
-      setError("Failed to analyze media. Please ensure the backend is running at http://localhost:8000.");
+      setError("Failed to analyze media. The server may be starting up — please try again in a moment.");
     } finally {
       setIsLoading(false);
     }
