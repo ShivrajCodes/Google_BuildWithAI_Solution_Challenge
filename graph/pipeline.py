@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import uuid
+import re
 from typing import TypedDict, List, Dict, Any, Optional
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -63,18 +64,40 @@ def verdict_node(state: GraphState):
         metadata={"type": "agent_output", "agent": "verdict_agent"}
     )
 
-    result_str = str(result)
+    result_str = str(result).strip()
     score = 0.0
     verdict = "Could not parse verdict"
 
-    for line in result_str.split("\n"):
-        if line.startswith("Score:"):
+    # Try to parse as JSON first (the agent returns JSON like {"score": 1.0, "verdict": "..."})
+    try:
+        # Strip markdown code fences if present
+        cleaned = re.sub(r'^```(?:json)?\s*', '', result_str, flags=re.MULTILINE)
+        cleaned = re.sub(r'\s*```$', '', cleaned, flags=re.MULTILINE)
+        cleaned = cleaned.strip()
+        parsed = json.loads(cleaned)
+        score = float(parsed.get("score", 0.0))
+        verdict = str(parsed.get("verdict", "Unknown"))
+    except (json.JSONDecodeError, ValueError):
+        # Regex fallback: extract score and verdict from malformed JSON
+        score_match = re.search(r'"score"\s*:\s*([0-9.]+)', result_str)
+        verdict_match = re.search(r'"verdict"\s*:\s*"([^"]+)"', result_str)
+        if score_match:
             try:
-                score = float(line.replace("Score:", "").strip())
+                score = float(score_match.group(1))
             except ValueError:
                 pass
-        elif line.startswith("Verdict:"):
-            verdict = line.replace("Verdict:", "").strip()
+        if verdict_match:
+            verdict = verdict_match.group(1)
+        else:
+            # Final fallback: look for plain-text "Score:" / "Verdict:" lines
+            for line in result_str.split("\n"):
+                if line.startswith("Score:"):
+                    try:
+                        score = float(line.replace("Score:", "").strip())
+                    except ValueError:
+                        pass
+                elif line.startswith("Verdict:"):
+                    verdict = line.replace("Verdict:", "").strip()
 
     return {"score": score, "verdict": verdict}
 
